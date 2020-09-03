@@ -1,88 +1,60 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="WRteam - https://wrteam.in/">
-        <title>Auto Updater for eKart by WRteam</title>
-        <link rel="icon"  type="image/png"  href="logo.png" />
-        <!-- Bootstrap -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="style.css" />
-        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
+<?php session_start();
+    ob_start(); 
+    include_once('includes/crud.php');
+    $db = new Database;
+    include_once('includes/custom-functions.php');
+    $fn = new custom_functions();
+    $db->connect();
+    date_default_timezone_set('Asia/Kolkata');
+    $sql = "SELECT * FROM settings";
+    $db->sql($sql);
+    $res = $db->getResult();
+    $settings = json_decode($res[5]['value'],1);
+    $logo = $fn->get_settings('logo');
+    
+    ?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="icon" type="image/ico" href="<?='dist/img/'.$logo?>">
+	<title>Admin Login - <?=$settings['app_name']?></title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="plugins/iCheck/flat/blue.css">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="plugins/morris/morris.css">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="plugins/datepicker/datepicker3.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker-bs3.css">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-        <![endif]-->
-    </head>
-    <body>
-        <div class="site-wrapper">
-            <div class="site-wrapper-inner">
-                <div class="cover-container">
-                    <div class="masthead clearfix">
-                        <div class="inner">
-                            <h3 class="masthead-brand">eKart - WRteam</h3>
-                            <nav>
-                                <img src='logo.png' width='80' style='float:right;'/>
-                            </nav>
-                        </div>
-                    </div>
-                    <div class="inner cover">
-                        <h1 class="cover-heading">eKart Updater</h1>
-                        <p class="lead">This is an Automatic Updater which helps you update your PHP Admin Panel Code From v2.0.3 to v2.0.4 </p>
-                        <p>
-							<b>Please note</b> : Use this script only when, you have <b>eKart v2.0.3 App & Admin Panel</b> installed on your server. <span style='color: #d2120e;'>Ignore this if you are starting it freshly from scratch.</span>
-							<br/><br/>Make sure you update system only once using this auto updater. Once update work is done delete the <b>/update</b> folder from your server directory
-						</p>
-                        <br>
-						<p id='result' style='display:none;'>Do not close window or refresh the page while system is being updated.</p>
-						<p class="lead">
-                            <a href="#" id='update_btn' class="btn btn-lg btn-success">Update Now to v2.0.4</a>
-                        </p>
-						<p>
-                            <a href="https://codecanyon.net/item/city-ecommerce-app/22015911" target='_blank' class="btn btn-lg btn-default">See What's New Here</a>
-                        </p>
-                    </div>
-                    <div class="mastfoot">
-                        <div class="inner">
-                            <p>&copy <?=date('Y');?> eKart - Developed by <a href="https://wrteam.in/" target='_blank'>WRteam</a></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Bootstrap core JavaScript ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
-        <!-- Bootstrap -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>    
-		<script>
-		$(document).on('click','#update_btn',function(e){
-			if(confirm("Are you sure want to upgrade the system from v5.3.x to v5.4 ? Make sure you do it only once! ")){
-				e.preventDefault();
-				$.ajax({
-					url : 'updater.php',
-					type: "POST",
-					data: $(this).serialize(),
-					beforeSend: function() {
-						$('#result').fadeIn(100);
-						$('#update_btn').html('Please Wait... System is being updated'); 
-						$('#update_btn').prop('disabled', true);
-					},
-					success: function(result){
-						// alert('called');
-						$('#result').html(result);
-						$('#result').show();
-						$('#update_btn').removeClass('btn-warning');
-						$('#update_btn').addClass('btn-success');
-						$('#update_btn').html('Congrats! Your system is now up-to-date');
-						// $('#update_btn').prop('disabled', false);
-					}
-				});
-			}
-		});
-		</script>
-    </body>
+    <![endif]-->
+  </head>
+</body>
+      <!-- Content Wrapper. Contains page content -->
+       <?php include 'public/login-form.php'; ?>
+  </body>
 </html>
